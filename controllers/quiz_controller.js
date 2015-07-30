@@ -7,10 +7,23 @@ exports.question = function(req, res) {
   });
 };
 
+// Convierte un texto en mayúsculas, sin acentos y sin espacios antes o después
+// para hacer las comparaciones más sencillas
+function unificar(texto) {
+  var acentos = [[/[ÁÀÄÂ]/, /[ÉÈËÊ]/, /[ÍÌÏÎ]/, /[ÓÒÖÔ]/, /[ÚÙÜÛ]/],
+                 ['A',      'E',      'I',      'O',      'U']]
+
+  var resultado = texto.trim().toUpperCase();
+  for (var i = 0; i < 5; i++) {
+    resultado = resultado.replace(acentos[0][i], acentos[1][i]);
+  }
+  return resultado
+}
+
 // GET /quizes/answer
 exports.answer = function(req, res) {
   models.Quiz.findAll().then(function(quiz) {
-    if (req.query.respuesta === quiz[0].respuesta) {
+    if (unificar(req.query.respuesta) === unificar(quiz[0].respuesta)) {
       res.render('quizes/answer', { respuesta: 'Correcto' } );
     } else {
       res.render('quizes/answer', { respuesta: 'Incorrecto' } );
