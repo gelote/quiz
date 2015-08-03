@@ -1,0 +1,8 @@
+<label for="preg" class="rem">Pregunta:</label>
+<input type="text" id="preg" name="quiz[pregunta]" placeholder="Pregunta" value="<%= (quiz.pregunta === 'Pregunta') ? '' : quiz.pregunta %>" />
+<br/>
+<label for="resp" class="rem">Respuesta:</label>
+<input type="text" id="resp" name="quiz[respuesta]" placeholder="Respuesta" value="<%= (quiz.respuesta === 'Respuesta') ? '' : quiz.respuesta %>" />
+<br/>
+<input type="submit" value="Guardar"/>
+<a href="/quizes"><button type="button">Cancelar</button></a>

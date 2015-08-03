@@ -46,7 +46,7 @@ exports.index = function(req, res) {
     });
   } else {
     models.Quiz.findAll({
-      where: ["pregunta like ?", ('%' + req.query.search + '%').replace(/ /g,"%")]
+      where: ["pregunta like ?", ('%' + req.query.search + '%').replace(/ /g,"%")], order:'pregunta ASC'
     }).then(function(quizes){
       res.render('quizes/index.ejs', { quizes: quizes, search: req.query.search });
     });
@@ -65,4 +65,22 @@ exports.answer = function(req, res) {
     resultado = 'Correcto';
   }
   res.render('quizes/answer', { quiz: req.quiz, respuesta: resultado }); // req.quiz: instancia de quiz cargada con autoload
+};
+
+// GET /quizes/new
+exports.new = function(req, res) {
+  var quiz = models.Quiz.build(     // crea objeto quiz
+    { pregunta: 'Pregunta', respuesta: 'Respuesta', nuevo: 1 }
+  );
+  res.render('quizes/new', { quiz: quiz } );
+};
+
+// GET /quizes/create
+exports.create = function(req, res) {
+  var quiz = models.Quiz.build( req.body.quiz );
+
+  //Guarda en BD los campos pregunta y respuesta de quiz
+  quiz.save({fields: ['pregunta', 'respuesta']}).then(function(){
+    res.redirect('/quizes');
+  })  //Redirección HTTP (URL relativa) a lista de preguntas
 };
