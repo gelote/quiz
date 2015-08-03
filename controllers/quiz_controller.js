@@ -14,27 +14,55 @@ function unificar(texto) {
 }
 
 
+// Autoload :id
+exports.load = function(req, res, next, quizId) {
+  models.Quiz.find({
+            where: {
+                id: Number(quizId)
+            }
+        }).then(
+    function(quiz) {
+      if (quiz) {
+        req.quiz = quiz;
+        next();
+      } else{
+        next(new Error('No existe quizId=' + quizId));
+      }
+    }
+  ).catch(function(error){
+    next(error)
+  });
+};
+
+function isBlank(str) {
+    return (!str || /^\s*$/.test(str));
+}
+
 // GET /quizes
 exports.index = function(req, res) {
-  models.Quiz.findAll().then(function(quizes){
-    res.render('quizes/index.ejs', { quizes: quizes });
-  });
+  if (isBlank(req.query.search)) {
+    models.Quiz.findAll().then(function(quizes){
+      res.render('quizes/index.ejs', { quizes: quizes, search: null });
+    });
+  } else {
+    models.Quiz.findAll({
+      where: ["pregunta like ?", ('%' + req.query.search + '%').replace(/ /g,"%")]
+    }).then(function(quizes){
+      res.render('quizes/index.ejs', { quizes: quizes, search: req.query.search });
+    });
+  }
 };
 
 // GET /quizes/:id
 exports.show = function(req, res) {
-  models.Quiz.find(req.params.quizId).then(function(quiz) {
-    res.render('quizes/show', { quiz: quiz } );
-  });
+  res.render('quizes/show', { quiz: req.quiz } );
 };
 
 // GET /quizes/:id/answer
 exports.answer = function(req, res) {
-  models.Quiz.find(req.params.quizId).then(function(quiz) {
-    if (unificar(req.query.respuesta) === unificar(quiz.respuesta)) {
-      res.render('quizes/answer', { respuesta: 'Correcto' } );
-    } else {
-      res.render('quizes/answer', { respuesta: 'Incorrecto' } );
-    }
-  });
-};         // req.quiz: instancia de quiz cargada con autoload
+  var resultado = 'Incorrecto';
+  if (unificar(req.query.respuesta) === unificar(req.quiz.respuesta)) {
+    resultado = 'Correcto';
+  }
+  res.render('quizes/answer', { quiz: req.quiz, respuesta: resultado }); // req.quiz: instancia de quiz cargada con autoload
+};
