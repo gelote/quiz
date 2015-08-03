@@ -1,12 +1,5 @@
 var models = require('../models/models.js');
 
-// GET /quizes/question
-exports.question = function(req, res) {
-  models.Quiz.findAll().then(function(quiz) {
-    res.render('quizes/question', { pregunta: quiz[0].pregunta } );
-  });
-};
-
 // Convierte un texto en mayúsculas, sin acentos y sin espacios antes o después
 // para hacer las comparaciones más sencillas
 function unificar(texto) {
@@ -20,13 +13,28 @@ function unificar(texto) {
   return resultado
 }
 
-// GET /quizes/answer
+
+// GET /quizes
+exports.index = function(req, res) {
+  models.Quiz.findAll().then(function(quizes){
+    res.render('quizes/index.ejs', { quizes: quizes });
+  });
+};
+
+// GET /quizes/:id
+exports.show = function(req, res) {
+  models.Quiz.find(req.params.quizId).then(function(quiz) {
+    res.render('quizes/show', { quiz: quiz } );
+  });
+};
+
+// GET /quizes/:id/answer
 exports.answer = function(req, res) {
-  models.Quiz.findAll().then(function(quiz) {
-    if (unificar(req.query.respuesta) === unificar(quiz[0].respuesta)) {
+  models.Quiz.find(req.params.quizId).then(function(quiz) {
+    if (unificar(req.query.respuesta) === unificar(quiz.respuesta)) {
       res.render('quizes/answer', { respuesta: 'Correcto' } );
     } else {
       res.render('quizes/answer', { respuesta: 'Incorrecto' } );
     }
   });
-};
+};         // req.quiz: instancia de quiz cargada con autoload
