@@ -6,9 +6,17 @@
 <% if ( search ) { %>
   <b>Hay <%= quizes.length %> preguntas que contienen las palabras "<%= search %>":</b>
 <% } %>
-<ol>
+<table style="text-align: center">
 <% var i; for (i=0; i < quizes.length; i++) { %>
-    <li><a href="quizes/<%= quizes[i].id %>"><%= quizes[i].pregunta %></a></li>
+    <tr>
+      <td><%= (i+1) %>.</td>
+      <td><a href="quizes/<%= quizes[i].id %>"><%= quizes[i].pregunta %></a></td>
+      <td><%= quizes[i].tema %></td>
+      <td><a href="quizes/<%= quizes[i].id %>/edit"><button>Editar</button></a></td>
+      <td><form method="post" action="quizes/<%= quizes[i].id %>?_method=delete">
+        <button type="submit" onsubmit="return confirm('¿Borrar: <%= quizes[i].pregunta %>?');">Borrar</button>
+      </form></td>
+    </tr>
 <% } %>
-</ol>
+</table>
 <a href="/quizes/new"><button type="button">Crear pregunta</button></a>
