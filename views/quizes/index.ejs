@@ -1,3 +1,4 @@
+<div style="text-align: center;">
 <form method="get" action="/quizes">
   <label for="search">Buscar preguntas que contengan:</label>
   <input id="search" type="search" name="search" text="" />
@@ -6,7 +7,13 @@
 <% if ( search ) { %>
   <b>Hay <%= quizes.length %> preguntas que contienen las palabras "<%= search %>":</b>
 <% } %>
-<table style="text-align: center">
+<table style="text-align: left;">
+    <tr>
+      <th>Nº</th>
+      <th>Pregunta</th>
+      <th>Tema</th>
+      <th colspan="2">Edición</th>
+    </tr>
 <% var i; for (i=0; i < quizes.length; i++) { %>
     <tr>
       <td><%= (i+1) %>.</td>
@@ -14,9 +21,10 @@
       <td><%= quizes[i].tema %></td>
       <td><a href="quizes/<%= quizes[i].id %>/edit"><button>Editar</button></a></td>
       <td><form method="post" action="quizes/<%= quizes[i].id %>?_method=delete">
-        <button type="submit" onsubmit="return confirm('¿Borrar: <%= quizes[i].pregunta %>?');">Borrar</button>
+        <input type="submit" onclick="return confirm('¿Borrar: <%= quizes[i].pregunta %>?');" value="Borrar" />
       </form></td>
     </tr>
 <% } %>
 </table>
 <a href="/quizes/new"><button type="button">Crear pregunta</button></a>
+</div>

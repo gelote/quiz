@@ -6,11 +6,11 @@
 <br/>
 <label for="tema" class="rem">Tema:</label>
 <select id="tema" name="quiz[tema]">
- <option value="otro" <%= (quiz.tema) ? '' : 'selected' %>>Otro</option>
- <option value="humanidades">Humanidades</option>
- <option value="ocio">Ocio</option>
- <option value="ciencia">Ciencia</option>
- <option value="tecnologia">Tecnología</option>
+ <option value="otro" <%= (!quiz.tema || (quiz.tema && quiz.tema === 'otro')) ? 'selected' : '' %>>Otro</option>
+ <option value="humanidades" <%= (quiz.tema && quiz.tema === 'humanidades') ? 'selected' : '' %>>Humanidades</option>
+ <option value="ocio" <%= (quiz.tema && quiz.tema === 'ocio') ? 'selected' : '' %>>Ocio</option>
+ <option value="ciencia" <%= (quiz.tema && quiz.tema === 'ciencia') ? 'selected' : '' %>>Ciencia</option>
+ <option value="tecnologia" <%= (quiz.tema && quiz.tema === 'tecnologia') ? 'selected' : '' %>>Tecnología</option>
 </select><br/>
 <input type="submit" value="Guardar"/>
 <a href="/quizes"><button type="button">Cancelar</button></a>
