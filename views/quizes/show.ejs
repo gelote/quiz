@@ -3,3 +3,19 @@
   <input id="respuesta" type="text" name="respuesta" placeholder="Responda aquí"/>
   <input type="submit" value="Enviar"/>
 </form>
+
+<p><a href="/quizes/<%= quiz.id %>/comments/new"><button>Nuevo comentario</button></a></p>
+
+<% if (quiz.Comments && quiz.Comments.length > 0) { %>
+<p><strong>Comentarios:</strong></p>
+<ul>
+<% for(index in quiz.Comments){ %>
+	<% if(quiz.Comments[index].publicado){ %>
+		<li><%=quiz.Comments[index].texto %></li>
+	<% } else if(session.user && (session.user.isAdmin || (session.user && quiz.UserId === session.user.id))){ %>
+		<li><%=quiz.Comments[index].texto %>
+			<a href="/quizes/<%= quiz.id %>/comments/<%= quiz.Comments[index].id %>/publish"><button>Publicar</button></a></li>
+	<% } %>
+<% } %>
+</ul>
+<% } %>

@@ -28,29 +28,65 @@ var sequelize = new Sequelize(DB_name, user, pwd,
 
 //Importar la definición de la tabla Quiz en quiz.js
 var Quiz = sequelize.import(path.join(__dirname, 'quiz'));
-exports.Quiz = Quiz; //exportar la definición de tabla Quiz
+
+// Importar definicion de la tabla Comment
+var Comment = sequelize.import(path.join(__dirname, 'comment'));
+
+// Importar definicion de la tabla Comment
+var User = sequelize.import(path.join(__dirname, 'user'));
+
+Comment.belongsTo(Quiz);
+Quiz.hasMany(Comment);
+
+// Los quizes pertenecen a un usuario registrado
+Quiz.belongsTo(User);
+User.hasMany(Quiz);
+
+// exportar tablas de Quiz
+exports.Quiz = Quiz;
+exports.Comment = Comment;
+exports.User = User;
 
 //sequelize.sync() crea e inicializa la tabla de preguntas en DB
 sequelize.sync().then(function() {
-  //success(..) ejecuta el manejador una vez creada la tabla
-  Quiz.count().then(function(count) {
-    if (count === 0) {
-        Quiz.create( {
-          pregunta:  'Capital de Italia',
-          respuesta: 'Roma',
-          tema:      'otro'
-        });
-        Quiz.create( {
-          pregunta:  'Capital de Portugal',
-          respuesta: 'Lisboa',
-          tema:      'otro'
-        })
-        .then(function() {
-          console.log('Base de datos inicializada');
-        });
-    };
-  });
+    User.count().then(function (count) {
+        if (count === 0) {   // la tabla se inicializa solo si está vacía
+            User.bulkCreate(
+                [{ username: 'admin', 
+                   password: '1234', 
+                    isAdmin:  true },
+                 { username: 'pepe', 
+                   password: '5678' } // por defecto isAdmin es 'false'
+                ]
+            ).then(function () {
+                console.log('Base de datos (tabla user) inicializada');
+                Quiz.count().then(function(count) {
+                    if (count === 0) {
+                        Quiz.create( {
+                            pregunta:  'Capital de Italia',
+                            respuesta: 'Roma',
+                            tema:      'otro', 
+                            UserId:    2
+                        });
+                        Quiz.create( {
+                            pregunta:  'Capital de Portugal',
+                            respuesta: 'Lisboa',
+                            tema:      'otro',
+                            UserId:    2
+                        })
+                        .then(function() {
+                            console.log('Base de datos inicializada');
+                        });
+                    };
+                });
+            }, function(err) {
+                console.log('Error sincronizando Base de datos (3): ' + err);
+            });
+        }
+    }, function (err) {
+        console.log('Error sincronizando Base de datos (2): ' + err);
+    });
 }, function(err) {
-  //Si hubo algún problema
-  console.log('Error sincronizando Base de datos: ' + err);
+    //Si hubo algún problema
+    console.log('Error sincronizando Base de datos (1): ' + err);
 });
