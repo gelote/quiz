@@ -1,4 +1,5 @@
 var models = require('../models/models.js');
+var Sequelize = require("sequelize");
 
 /* Funciones de ayuda */
 
@@ -62,23 +63,32 @@ exports.load = function (req, res, next, quizId) {
 exports.index = function (req, res) {
     var options = {};
     var search = null;
+    var url_busqueda = req.path;
+    var campoLike;
 
-    if (req.user) {
-        options.where = { UserId: req.user.id };
-    }
-
-    /* TODO: Mejorar */
     if (!isBlank(req.query.search)) {
         search = req.query.search;
+        campoLike = ('%' + search.toLowerCase() + '%').replace(/ /g, "%");
+
         options = {
-            where: ["lower(pregunta) like ?",
-                ('%' + search.toLowerCase() + '%').replace(/ /g, "%")],
+            where: ["lower(pregunta) like ?", campoLike],
             order: 'pregunta ASC'
         };
     }
+
+    if (req.user) {
+
+        if (search) {          
+            options.where = ["lower(pregunta) like ? AND UserId = ?", campoLike, req.user.id];
+
+        } else {
+            options.where = { UserId: req.user.id };                   
+        }
+    }
+
     models.Quiz.findAll(options).then(
       function (quizes) {
-          res.render('quizes/index.ejs', { quizes: quizes, search: search, errors: [] });
+          res.render('quizes/index.ejs', { quizes: quizes, search: search, url_busqueda: url_busqueda, errors: [] });
       }).catch(
       function (error) {
           next(error)
