@@ -48,6 +48,22 @@ app.use(function (req, res, next) {
     next();
 });
 
+// Auto-logout
+app.use(function (req, res, next) {
+    if (req.session.user) {
+        var antes = new Date(req.session.user.last_request);
+        var ahora = new Date();
+        if ((ahora - antes) > 120000) { // 2 min = 120.000 ms
+            delete req.session.user;
+            req.session.errors = [{ "message": 'Sesión caducada. Vuelva a registrarse' }];
+            res.redirect("/login");
+        } else {
+            req.session.user.last_request = ahora;
+        }
+    }
+    next();
+});
+
 app.use('/', routes);
 
 // catch 404 and forward to error handler

@@ -1,0 +1,25 @@
+﻿<h4>Página de estadísticas</h4>
+
+<table>
+	<tr>
+		<th>Preguntas:</th>
+		<td><%= data.preguntas %></td>
+	</tr>
+	<tr>
+		<th>Comentarios:</th>
+		<td><%= data.comentarios %> (<%= (data.comentarios === data.comentarios_publicados) ? 'todos' : data.comentarios_publicados %> publicados)
+		</td>
+	</tr>
+	<tr>
+		<th>Media de comentarios por pregunta:</th>
+		<td><%= data.media_comentarios %></td>
+	</tr>
+	<tr>
+		<th>Preguntas sin comentarios:</th>
+		<td><%= data.preguntas_sin_comentarios %></td>
+	</tr>
+	<tr>
+		<th>Preguntas con comentarios:</th>
+		<td><%= data.preguntas_con_comentarios %></td>
+	</tr>
+</table>

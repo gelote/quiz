@@ -1,4 +1,5 @@
 var models = require('../models/models.js');
+var Sequelize = require("sequelize");
 
 /* Funciones de ayuda */
 
@@ -60,28 +61,16 @@ exports.load = function (req, res, next, quizId) {
 // GET /quizes
 // GET /users/:userId/quizes
 exports.index = function (req, res) {
-    var options = {};
     var search = null;
+    var userId = null;
+    var url_busqueda = req.path;
 
-    if (req.user) {
-        options.where = { UserId: req.user.id };
-    }
-
-    /* TODO: Mejorar */
-    if (!isBlank(req.query.search)) {
-        search = req.query.search;
-        options = {
-            where: ["lower(pregunta) like ?",
-                ('%' + search.toLowerCase() + '%').replace(/ /g, "%")],
-            order: 'pregunta ASC'
-        };
-    }
-    models.Quiz.findAll(options).then(
+    if (!isBlank(req.query.search)) search = req.query.search;
+    if (req.user) userId = req.user.id;
+        
+    models.Quiz.filterQuizes(userId, search).then(
       function (quizes) {
-          res.render('quizes/index.ejs', { quizes: quizes, search: search, errors: [] });
-      }).catch(
-      function (error) {
-          next(error)
+          res.render('quizes/index.ejs', { quizes: quizes, search: search, url_busqueda: url_busqueda, errors: [] });
       });
 };
 

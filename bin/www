@@ -7,6 +7,9 @@
 var app = require('../app');
 var debug = require('debug')('quiz:server');
 var http = require('http');
+var fs = require('fs');
+var https = require('https');
+
 
 /**
  * Get port from environment and store in Express.
@@ -87,4 +90,31 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+}
+
+
+
+
+/********** HTTPS ********/
+
+var options = {
+  key: fs.readFileSync('certs/quiz-2015-key.pem').toString(),
+  cert: fs.readFileSync('certs/quiz-2015-cert.pem').toString()
+};
+
+var serverSecure = https.createServer(options, app);
+serverSecure.listen(8443);
+serverSecure.on('error', onError);
+serverSecure.on('listening', onListeningSecure);
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListeningSecure() {
+  var addr = serverSecure.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening Secure on ' + bind);
 }
